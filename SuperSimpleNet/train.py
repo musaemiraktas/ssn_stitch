@@ -703,7 +703,7 @@ def run_unsup(data_name):
         "image_size": (512, 512),
         "seed": 42,
         "batch": 8,
-        "epochs": 10,
+        "epochs": 100,
         "flips": False,  # makes no difference, just faster if false to avoid computation
         "seg_lr": 0.0002,
         "dec_lr": 0.0002,
