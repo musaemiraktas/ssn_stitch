@@ -1,7 +1,7 @@
 import os
 import sys
 
-from SuperSimpleNet.datamodules.test_patch_generator import process_test_images
+from datamodules.test_patch_generator import process_test_images
 
 LOG_WANDB = False
 
