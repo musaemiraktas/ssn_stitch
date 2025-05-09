@@ -174,17 +174,6 @@ def test(
         metric.cpu()
         metric.reset()
 
-    #veri seti değişirse bu kısım silinebilir ya da değiştirilebilir
-    process_test_images(
-        img_dir="datasets/patched_dataset/test/original_images",
-        mask_dir="datasets/patched_dataset/test/original_masks",
-        label_dir="runs/detect/results/labels",
-        out_img_dir="datasets/patched_dataset/test/images",
-        out_mask_dir="datasets/patched_dataset/test/masks",
-        model_path="best/best.pt",
-        patch_size=512,
-        n_patches=10
-    )
     test_loader = datamodule.test_dataloader()
     results = {
         "anomaly_map": [],
@@ -342,14 +331,14 @@ def train_and_eval(model, datamodule, config, device):
         print("Error saving checkpoint" + str(e))
 
     if config["dataset"] == "patched_dataset":
-        print("🔄 Test patch'leri YOLO kullanılarak çıkarılıyor...")
+        print("Test patch'leri YOLO kullanılarak çıkarılıyor...")
         process_test_images(
             img_dir=str(Path(config["datasets_folder"]) / config["dataset"] / "test/original_images"),
             mask_dir=str(Path(config["datasets_folder"]) / config["dataset"] / "test/original_masks"),
             label_dir="runs/detect/results/labels",
             out_img_dir=str(Path(config["datasets_folder"]) / config["dataset"] / "test/images"),
             out_mask_dir=str(Path(config["datasets_folder"]) / config["dataset"] / "test/masks"),
-            model_path="best.pt",  # Yol doğruysa sabit kalabilir
+            model_path="best/best.pt",
             patch_size=512,
             n_patches=10
         )
