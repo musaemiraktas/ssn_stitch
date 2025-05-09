@@ -6,6 +6,7 @@ from ultralytics import YOLO
 from glob import glob
 from tqdm import tqdm
 
+
 def parse_yolo_polygons(txt_path, img_w, img_h):
     polygons = []
     with open(txt_path, 'r') as f:
@@ -102,7 +103,7 @@ def main():
         label_dir="runs/detect/results/labels",
         out_img_dir="datasets/patched_dataset/test/images",
         out_mask_dir="datasets/patched_dataset/test/masks",
-        model_path="best/best.pt",
+        model_path= Path("/content/best/best.pt"),
         patch_size=512,
         n_patches=10
     )
