@@ -774,8 +774,8 @@ def run_sup(data_name):
 
 
 def main():
-    #run_unsup(sys.argv[1])
-    run_sup(sys.argv[1])
+    run_unsup(sys.argv[1])
+    #run_sup(sys.argv[1])
 
 
 if __name__ == "__main__":
