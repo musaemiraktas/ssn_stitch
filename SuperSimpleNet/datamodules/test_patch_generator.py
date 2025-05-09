@@ -73,7 +73,7 @@ def process_test_images(img_dir, mask_dir, label_dir, out_img_dir, out_mask_dir,
             print(f"Mask not found: {mask_path}, skipping.")
             continue
 
-        result = model(img_path, save_txt=True, conf=0.25, show=False)[0]
+        result = model.predict(img_path, save_txt=True, conf=0.25, show=False)[0]
         txt_path = os.path.join(label_dir, f"{img_name}.txt")
 
         image = cv2.imread(img_path)
