@@ -9,6 +9,7 @@ import os
 import copy
 import torch
 from pytorch_lightning import seed_everything
+import cv2
 
 class PatchedDataset(SSNDataset):
     """
@@ -48,15 +49,22 @@ class PatchedDataset(SSNDataset):
         for path in image_paths:
             sample_id = path.stem
             mask_path = mask_dir / f"{sample_id}.png"
-            if not mask_path.exists():
+            label_index = 0  # default: normal
+
+            if mask_path.exists():
+                mask = cv2.imread(str(mask_path), cv2.IMREAD_GRAYSCALE)
+                if mask is not None and mask.sum() > 0:
+                    label_index = 1
+            else:
                 mask_path = ""
+
             samples.append([
                 str(image_dir),
                 sample_id,
                 self.split.value,
                 str(path),
                 str(mask_path),
-                0,  # label_index = NORMAL (training) or just keep it 0 for unsupervised
+                label_index,
             ])
 
         df = pd.DataFrame(samples, columns=[
