@@ -1,7 +1,7 @@
 import os
 import sys
 
-from datamodules.test_patch_generator import process_test_images
+#from datamodules.test_patch_generator import process_test_images
 
 LOG_WANDB = False
 
@@ -129,17 +129,6 @@ def train(
                 prog_bar.update(1)
 
             if (epoch + 1) % eval_step_size == 0:
-                if (epoch + 1) == eval_step_size:
-                    process_test_images(
-                        img_dir="datasets/patched_dataset/test/original_images",
-                        mask_dir="datasets/patched_dataset/test/original_masks",
-                        label_dir="runs/detect/results/labels",
-                        out_img_dir="datasets/patched_dataset/test/images",
-                        out_mask_dir="datasets/patched_dataset/test/masks",
-                        model_path="best/best.pt",
-                        patch_size=512,
-                        n_patches=10
-                    )
                 results = test(
                     model=model,
                     datamodule=datamodule,
