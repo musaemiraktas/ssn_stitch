@@ -699,7 +699,7 @@ def run_unsup(data_name):
         "stop_grad": True,
         "clip_grad": False,
         "eval_step_size": 4,
-        "results_save_path": Path("./results"),
+        "results_save_path": Path("/content/drive/MyDrive/AP_Bitirme/results"),
     }
     if data_name == "visa":
         config["perlin_thr"] = 0.6
