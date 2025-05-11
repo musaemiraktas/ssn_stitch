@@ -675,7 +675,7 @@ def run_unsup(data_name):
     config = {
         "wandb_project": "icpr",
         "datasets_folder": Path("./datasets"),
-        "num_workers": 2,
+        "num_workers": 4,
         "setup_name": "superSimpleNet",
         "backbone": "wide_resnet50_2",
         "layers": ["layer2", "layer3"],
@@ -689,7 +689,7 @@ def run_unsup(data_name):
         "perlin_thr": 0.5,
         "image_size": (512, 512),
         "seed": 42,
-        "batch": 4,
+        "batch": 8,
         "epochs": 10,
         "flips": False,  # makes no difference, just faster if false to avoid computation
         "seg_lr": 0.0002,

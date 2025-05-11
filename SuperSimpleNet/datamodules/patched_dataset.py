@@ -48,15 +48,19 @@ class PatchedDataset(SSNDataset):
         samples = []
         for path in image_paths:
             sample_id = path.stem
-            mask_path = mask_dir / f"{sample_id}.png"
-            label_index = 0  # default: normal
 
-            if mask_path.exists():
-                mask = cv2.imread(str(mask_path), cv2.IMREAD_GRAYSCALE)
-                if mask is not None and mask.sum() > 0:
-                    label_index = 1
-            else:
+            if self.split == Split.TRAIN:
+                label_index = 0
                 mask_path = ""
+            else:
+                mask_path = mask_dir / f"{sample_id}.png"
+                label_index = 0  # varsayılan: kusursuz
+                if mask_path.exists():
+                    mask = cv2.imread(str(mask_path), cv2.IMREAD_GRAYSCALE)
+                    if mask is not None and mask.sum() > 0:
+                        label_index = 1
+                else:
+                    mask_path = ""
 
             samples.append([
                 str(image_dir),
