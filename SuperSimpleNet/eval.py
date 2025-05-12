@@ -274,13 +274,15 @@ def get_visa(config):
 
 def get_custom_dataset(config):
     datamodule = SimpleImageDataModule(
-        root=Path(config["datasets_folder"]) / "dataset_resized_1536x2048",
-        image_size=(2048, 1536),
-        batch_size=config["batch"],
-        num_workers=config["num_workers"]
+        root=Path(config["datasets_folder"]) / "patched_dataset",
+        image_size=(512, 512),
+        train_batch_size=config["batch"],
+        eval_batch_size=config["batch"],
+        num_workers=config["num_workers"],
+        seed=config["seed"]
     )
     datamodule.setup()
-    return [("dataset_resized_1536x2048", datamodule)]
+    return [("patched_dataset", datamodule)]
 
 
 def get_avg(df):
@@ -370,7 +372,7 @@ def run_eval(datasets, run_id):
         run_id: run_id of checkpoints to be used
     """
     config = {
-        "weights_path": Path("./results/superSimpleNet/checkpoints"),
+        "weights_path": Path("C:\\Users\\Emir\\Desktop\\AP Bitirme\\Koltuk kılıfı görüntüleri\\Models\\ssn_unsup_1\\superSimpleNet\\superSimpleNet\\checkpoints"),
         #"weights_path": Path(r"./weights"),
         "datasets_folder": Path("./datasets"),
         "results_save_path": Path("./eval_res"),
@@ -460,10 +462,12 @@ def run_eval(datasets, run_id):
 
 
 if __name__ == "__main__":
-    run_eval(datasets=["mvtec", "visa", "ksdd2", "sensum"], run_id=0)
+    #run_eval(datasets=["mvtec", "visa", "ksdd2", "sensum"], run_id=0)
+    run_eval(datasets=["patched_dataset"], run_id="")
     # to get mean and std of multiple runs, specify them with run_ids
-    generate_result_json(
+    
+    """generate_result_json(
         run_ids=["0"],
         datasets=["mvtec", "visa", "ksdd2", "sensum"],
         res_path=Path("./eval_res"),
-    )
+    )"""
