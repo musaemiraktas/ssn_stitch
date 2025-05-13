@@ -9,7 +9,7 @@ from pytorch_lightning import LightningDataModule
 from tqdm import tqdm
 import pandas as pd
 
-from SuperSimpleNet.datamodules.patched_dataset import PatchedDataModule
+from datamodules.patched_dataset import PatchedDataModule
 from common.results_writer import ResultsWriter
 from common.visualizer import Visualizer
 from datamodules import sensum, ksdd2
