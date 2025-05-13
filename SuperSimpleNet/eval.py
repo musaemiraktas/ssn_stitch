@@ -28,8 +28,8 @@ def eval(
     image_metrics: dict[str, Metric],
     pixel_metrics: dict[str, Metric],
     normalize: bool = True,
-    image_save_path: Path = None,
-    score_save_path: Path = None,
+    image_save_path: Path = Path("./eval_res_visuals"),
+    score_save_path: Path = Path("./eval_scores"),
 ):
     model.to(device)
     model.eval()
