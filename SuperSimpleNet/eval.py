@@ -376,8 +376,8 @@ def run_eval(datasets, run_id):
         #"weights_path": Path(r"./weights"),
         "datasets_folder": Path("/content/ssn_stitch/SuperSimpleNet/datasets"),
         "results_save_path": Path("./eval_res"),
-        "image_save_path": None,  # set to save images
-        "score_save_path": None,  # set to save scores
+        "image_save_path": Path("./eval_images"),
+        "score_save_path": Path("./eval_scores"),
         "seed": 42,
         "batch": 8,
         "num_workers": 8,
