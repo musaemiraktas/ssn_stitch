@@ -9,6 +9,7 @@ from pytorch_lightning import LightningDataModule
 from tqdm import tqdm
 import pandas as pd
 
+from SuperSimpleNet.datamodules.patched_dataset import PatchedDataModule
 from common.results_writer import ResultsWriter
 from common.visualizer import Visualizer
 from datamodules import sensum, ksdd2
@@ -17,7 +18,6 @@ from datamodules.visa import Visa
 from datamodules.ksdd2 import KSDD2
 from datamodules.sensum import Sensum
 from model.supersimplenet import SuperSimpleNet
-from datamodules.simpledataset import SimpleImageDataModule
 
 
 @torch.no_grad()
@@ -273,7 +273,7 @@ def get_visa(config):
     return data
 
 def get_custom_dataset(config):
-    datamodule = SimpleImageDataModule(
+    datamodule = PatchedDataModule(
         root=Path(config["datasets_folder"]) / "patched_dataset",
         image_size=(512, 512),
         train_batch_size=config["batch"],
@@ -466,8 +466,8 @@ if __name__ == "__main__":
     run_eval(datasets=["patched_dataset"], run_id="")
     # to get mean and std of multiple runs, specify them with run_ids
     
-    """generate_result_json(
-        run_ids=["0"],
-        datasets=["mvtec", "visa", "ksdd2", "sensum"],
-        res_path=Path("./eval_res"),
-    )"""
+    generate_result_json(
+    run_ids=[""],
+    datasets=["patched_dataset"],
+    res_path=Path("./eval_res"),
+    )
