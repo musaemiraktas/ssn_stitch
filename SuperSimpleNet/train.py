@@ -674,7 +674,7 @@ def run_unsup(data_name):
 
     config = {
         "wandb_project": "icpr",
-        "datasets_folder": Path("./datasets"),
+        "datasets_folder": Path("/content/drive/MyDrive/APBitirme/results"),
         "num_workers": 4,
         "setup_name": "superSimpleNet",
         "backbone": "wide_resnet50_2",

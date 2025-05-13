@@ -372,9 +372,9 @@ def run_eval(datasets, run_id):
         run_id: run_id of checkpoints to be used
     """
     config = {
-        "weights_path": Path("C:\\Users\\Emir\\Desktop\\AP Bitirme\\Koltuk kılıfı görüntüleri\\Models\\ssn_unsup_1\\superSimpleNet\\superSimpleNet\\checkpoints"),
+        "weights_path": Path("/content/drive/MyDrive/AP_Bitirme/results/superSimpleNet/checkpoints"),
         #"weights_path": Path(r"./weights"),
-        "datasets_folder": Path("./datasets"),
+        "datasets_folder": Path("/content/ssn_stitch/SuperSimpleNet/datasets"),
         "results_save_path": Path("./eval_res"),
         "image_save_path": None,  # set to save images
         "score_save_path": None,  # set to save scores
@@ -388,7 +388,7 @@ def run_eval(datasets, run_id):
         "ksdd2": get_ksdd2,
         "mvtec": get_mvtec,
         "visa": get_visa,
-        "dataset_resized_1536x2048": get_custom_dataset,
+        "patched_dataset": get_custom_dataset,
     }
 
     for dataset in datasets:
