@@ -728,7 +728,7 @@ def run_sup(data_name):
     device = "cuda" if torch.cuda.is_available() else "cpu"
     config = {
         "wandb_project": "icpr",
-        "datasets_folder": Path("/content/datasets"),
+        "datasets_folder": Path("/content/ssn_stitch/SuperSimpleNet/datasets"),
         "num_workers": 4,
         "setup_name": "superSimpleNet",
         "backbone": "wide_resnet50_2",
