@@ -23,20 +23,43 @@ class StitchSupervisedDataset(SSNDataset):
         image_dir = self.root / self.split.value / "images"
         mask_dir = self.root / self.split.value / "masks"
 
+        print(f"📂 İşleniyor: {self.split.value.upper()} split")
+        print(f"🔍 Görüntü klasörü: {image_dir}")
+        print(f"🔍 Maske klasörü: {mask_dir}")
+
         samples = []
+        total_found = 0
+        total_skipped = 0
+
         for img_path in sorted(image_dir.glob("*.jpg")):
             mask_path = mask_dir / f"{img_path.stem}.png"
             if not mask_path.exists():
+                print(f"⚠️ Maske bulunamadı: {mask_path.name} → atlandı")
+                total_skipped += 1
                 continue
+            total_found += 1
             label = LabelName.ABNORMAL if self._is_defective(mask_path) else LabelName.NORMAL
             samples.append([
                 str(self.root), img_path.stem, self.split.value,
                 str(img_path), str(mask_path), label
             ])
 
+        print(f"✅ Eşleşen {total_found} görüntü bulundu, {total_skipped} maske eksik")
+
+        if not samples:
+            raise RuntimeError(f"‼️ '{self.split.value}' split için hiç eşleşen görüntü ve maske bulunamadı.")
+
         df = DataFrame(samples, columns=["path", "sample_id", "split", "image_path", "mask_path", "label_index"])
         df.label_index = df.label_index.astype(int)
-        return df[df.label_index == 0].reset_index(drop=True), df[df.label_index == 1].reset_index(drop=True)
+
+        normal_df = df[df.label_index == 0].reset_index(drop=True)
+        abnormal_df = df[df.label_index == 1].reset_index(drop=True)
+
+        print(f"🟩 Normal örnekler: {len(normal_df)}")
+        print(f"🟥 Anormal örnekler: {len(abnormal_df)}")
+
+        return normal_df, abnormal_df
+
 
     def _is_defective(self, mask_path):
         mask = cv2.imread(str(mask_path), cv2.IMREAD_GRAYSCALE)
