@@ -30,6 +30,7 @@ from datamodules.visa import Visa
 from datamodules.simpledataset import SimpleImageDataModule
 from datamodules.supervised_simpledataset import SupervisedStitchDataModule
 from datamodules.patched_dataset import main_patched_dataset
+from datamodules.stitch_supervised import StitchSupervised
 
 from model.supersimplenet import SuperSimpleNet
 
@@ -760,11 +761,41 @@ def run_sup(data_name):
         main_ksdd2(device=device, config=config)
     if data_name == "defected_red_yellow":
         main_our_dataset_defect_synthesis(device=device, config=config)
+    if data_name == "stitch":
+        config["dataset"] = "stitch"
+        config["category"] = "stitch"
+        config["name"] = f"{config['category']}_{config['setup_name']}"
+
+        datamodule = StitchSupervised(
+            root=Path(config["datasets_folder"]) / "stitch",
+            image_size=config["image_size"],
+            train_batch_size=config["batch"],
+            eval_batch_size=config["batch"],
+            num_workers=config["num_workers"],
+            seed=config["seed"],
+            flips=config["flips"],
+        )
+        datamodule.setup()
+
+        model = SuperSimpleNet(image_size=config["image_size"], config=config)
+
+        results = train_and_eval(
+            model=model,
+            datamodule=datamodule,
+            config=config,
+            device=device,
+        )
+
+        results_writer = ResultsWriter(metrics=[
+            "AP-det", "AP-loc", "P-AUROC", "I-AUROC", "AUPRO", "seg-AP-det", "seg-I-AUROC"
+        ])
+        results_writer.add_result(category=config["category"], last=results)
+        results_writer.save(Path(config["results_save_path"]) / config["setup_name"] / config["dataset"])
 
 
 def main():
-    run_unsup(sys.argv[1])
-    #run_sup(sys.argv[1])
+    #run_unsup(sys.argv[1])
+    run_sup(sys.argv[1])
 
 
 if __name__ == "__main__":
