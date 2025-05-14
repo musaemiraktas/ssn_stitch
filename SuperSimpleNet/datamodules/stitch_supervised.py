@@ -9,7 +9,15 @@ from datamodules.base.dataset import SSNDataset
 
 class StitchSupervisedDataset(SSNDataset):
     def __init__(self, root, supervised, transform, split, flips, normal_flips, debug=False):
-        super().__init__(transform, root, split, flips, normal_flips, supervised, debug)
+        super().__init__(
+            root=root,
+            supervised=supervised,
+            transform=transform,
+            split=split,
+            flips=flips,
+            normal_flips=normal_flips,
+            debug=debug
+        )
 
     def make_dataset(self):
         image_dir = self.root / self.split.value / "images"

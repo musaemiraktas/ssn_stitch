@@ -729,7 +729,7 @@ def run_sup(data_name):
     config = {
         "wandb_project": "icpr",
         "datasets_folder": Path("/content/datasets"),
-        "num_workers": 1,
+        "num_workers": 4,
         "setup_name": "superSimpleNet",
         "backbone": "wide_resnet50_2",
         "layers": ["layer2", "layer3"],
@@ -742,7 +742,7 @@ def run_sup(data_name):
         "noise_std": 0.015,
         "perlin_thr": 0.6,
         "seed": 456654,
-        "batch": 8,
+        "batch": 16,
         "epochs": 100,
         "flips": True,
         "seg_lr": 0.0002,
