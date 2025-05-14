@@ -752,7 +752,7 @@ def run_sup(data_name):
         "stop_grad": False,
         "clip_grad": True,
         "eval_step_size": 4,
-        "results_save_path": Path("./results"),
+        "results_save_path": Path("/content/drive/MyDrive/AP_Bitirme/supervised_results"),
         "image_size": (1024, 768),
     }
     if data_name == "sensum":
