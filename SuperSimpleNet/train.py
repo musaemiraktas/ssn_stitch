@@ -729,7 +729,7 @@ def run_sup(data_name):
     config = {
         "wandb_project": "icpr",
         "datasets_folder": Path("/content/ssn_stitch/SuperSimpleNet/datasets"),
-        "num_workers": 4,
+        "num_workers": 1,
         "setup_name": "superSimpleNet",
         "backbone": "wide_resnet50_2",
         "layers": ["layer2", "layer3"],
