@@ -742,7 +742,7 @@ def run_sup(data_name):
         "noise_std": 0.015,
         "perlin_thr": 0.6,
         "seed": 456654,
-        "batch": 16,
+        "batch": 8,
         "epochs": 100,
         "flips": True,
         "seg_lr": 0.0002,
