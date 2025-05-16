@@ -31,15 +31,14 @@ class StitchSupervisedDataset(SSNDataset):
 
         df = read_csv(csv_path)
 
-        # Split'e göre filtrele
         df = df[df["split"] == self.split.value].reset_index(drop=True)
         df["label_index"] = df["label_index"].astype(int)
 
         normal_df = df[df.label_index == LabelName.NORMAL].reset_index(drop=True)
         abnormal_df = df[df.label_index == LabelName.ABNORMAL].reset_index(drop=True)
 
-        print(f"📊 '{self.split.value}' split için toplam {len(df)} örnek yüklendi")
-        print(f"🟩 Normal: {len(normal_df)} | Anormal: {len(abnormal_df)}")
+        print(f"'{self.split.value}' split için toplam {len(df)} örnek yüklendi")
+        print(f"Normal: {len(normal_df)} | Anormal: {len(abnormal_df)}")
 
         return normal_df, abnormal_df
 

@@ -606,15 +606,13 @@ def main_our_dataset(device, config):
     config["category"] = config["dataset"]
     config["name"] = f"{config['category']}_{config['setup_name']}"
 
-    # sabitlik için
     seed_everything(config["seed"], workers=True)
     torch.backends.cudnn.deterministic = True
     torch.backends.cudnn.benchmark = False
 
-    # Model oluştur
     model = SuperSimpleNet(image_size=config["image_size"], config=config)
 
-    # Veri modülü — senin datasetin doğrudan klasörde olacak
+
     datamodule = SimpleImageDataModule(
         root=Path(config["datasets_folder"]) / config["dataset"],
         image_size=config["image_size"],
@@ -623,7 +621,6 @@ def main_our_dataset(device, config):
     )
     datamodule.setup()
 
-    # Eğitim + değerlendirme
     results = train_and_eval(
         model=model,
         datamodule=datamodule,
@@ -631,7 +628,6 @@ def main_our_dataset(device, config):
         device=device,
     )
 
-    # Sonuçları kaydet
     results_writer = ResultsWriter(metrics=["AP-det", "AP-loc", "P-AUROC", "I-AUROC"])
     results_writer.add_result(category=config["category"], last=results)
     results_writer.save(
