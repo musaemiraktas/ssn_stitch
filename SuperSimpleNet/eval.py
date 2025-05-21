@@ -372,7 +372,7 @@ def run_eval(datasets, run_id):
         run_id: run_id of checkpoints to be used
     """
     config = {
-        "weights_path": Path("/content/drive/MyDrive/AP_Bitirme/results/superSimpleNet/checkpoints"),
+        "weights_path": Path("/content/drive/MyDrive/AP_Bitirme/results300/superSimpleNet/checkpoints"),
         #"weights_path": Path(r"./weights"),
         "datasets_folder": Path("/content/ssn_stitch/SuperSimpleNet/datasets"),
         "results_save_path": Path("./eval_res"),

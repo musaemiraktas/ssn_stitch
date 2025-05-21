@@ -33,7 +33,7 @@ class Visualizer:
             else:
                 gt_mask = np.zeros_like(anomaly_map)
             # images are normed to [0, 1] so we cut off at 0.5
-            #pred_mask = anomaly_map >= 0.5,
+            #pred_mask = anomaly_map >= 0.5
             pred_mask = anomaly_map >= 0.3
 
             gt_label = "Anomalous" if label.item() else "Normal"
