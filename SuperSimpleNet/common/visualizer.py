@@ -35,9 +35,9 @@ class Visualizer:
             # images are normed to [0, 1] so we cut off at 0.5
             #pred_mask = anomaly_map >= 0.5
             #pred_mask = anomaly_map >= 0.25
-            percentile = 99.5
+            percentile = 98
             threshold = np.percentile(anomaly_map, percentile)
-            print(f"⚙️ Using {percentile}th percentile threshold: {threshold:.4f}")
+            print(f"Using {percentile}th percentile threshold: {threshold:.4f}")
             pred_mask = anomaly_map >= threshold
 
             gt_label = "Anomalous" if label.item() else "Normal"
