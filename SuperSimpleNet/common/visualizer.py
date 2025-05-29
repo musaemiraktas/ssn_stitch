@@ -37,7 +37,7 @@ class Visualizer:
             #pred_mask = anomaly_map >= 0.25
             percentile = 99.0
             threshold = np.percentile(anomaly_map.numpy(), percentile)
-            print(f"⚙️ {Path(image_path).name} → {percentile}th percentile threshold = {threshold:.4f}")
+            print(f"{Path(image_path).name} → {percentile}th percentile threshold = {threshold:.4f}")
 
             pred_mask = anomaly_map >= threshold
 
