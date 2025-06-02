@@ -1,6 +1,7 @@
 import torch
 from tqdm import tqdm
 from pathlib import Path
+
 from model.supersimplenet import SuperSimpleNet
 from datamodules.patched_nomask_dataset import PatchedDataModuleNoMask
 
@@ -34,15 +35,13 @@ def eval_realworld(model, dataloader, device: str):
 
 if __name__ == "__main__":
     datamodule = PatchedDataModuleNoMask(
-    root=Path("/content/ssn_stitch/SuperSimpleNet/datasets/patched_dataset"),
-    image_size=(512, 512),
-    eval_batch_size=8,
-    num_workers=2,
-    seed=42
+        root=Path("/content/ssn_stitch/SuperSimpleNet/datasets/patched_dataset"),
+        image_size=(512, 512),
+        eval_batch_size=8,
+        num_workers=2,
+        seed=42
     )
     datamodule.setup()
-
-
 
 
     model_path = Path("/content/drive/MyDrive/AP_Bitirme/results300/superSimpleNet/checkpoints/patched_dataset/patched_dataset/weights.pt")
