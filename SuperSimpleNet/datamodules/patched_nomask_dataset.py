@@ -5,9 +5,10 @@ from anomalib.data.utils import Split, InputNormalizationMethod
 from pandas import DataFrame
 from datamodules.base.datamodule import SSNDataModule
 from datamodules.base.dataset import SSNDataset
+import os
 import torch
-import copy
-from pytorch_lightning import seed_everything
+import cv2
+
 
 class PatchedDatasetNoMask(SSNDataset):
     def __init__(
@@ -35,8 +36,9 @@ class PatchedDatasetNoMask(SSNDataset):
         samples = []
         for path in image_paths:
             sample_id = path.stem
-            label_index = 0  # her zaman kusursuz
-            mask_path = None  # maske kullanılmayacak
+            label_index = 0  # gerçek hayatta hepsi "kusursuz" varsayılır
+            mask_path = ""   # maske kullanılmıyor
+
             samples.append([
                 str(image_dir),
                 sample_id,
@@ -50,8 +52,8 @@ class PatchedDatasetNoMask(SSNDataset):
             "path", "sample_id", "split", "image_path", "mask_path", "label_index"
         ])
 
-        return df, pd.DataFrame()
-    
+        return df, pd.DataFrame()  # no abnormal samples
+
 
 class PatchedDataModuleNoMask(SSNDataModule):
     def __init__(
@@ -80,6 +82,7 @@ class PatchedDataModuleNoMask(SSNDataModule):
             flips=False,
         )
 
+        # Sadece test verisi tanımlanır
         self.test_data = PatchedDatasetNoMask(
             transform=self.transform_eval,
             split=Split.TEST,
