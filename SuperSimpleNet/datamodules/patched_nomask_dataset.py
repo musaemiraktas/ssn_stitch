@@ -70,6 +70,9 @@ class PatchedDataModuleNoMask(SSNDataModule):
     ) -> None:
         print(f"📂 [PatchedDataModuleNoMask] Resolution set to: {image_size}")
 
+        
+
+
         super().__init__(
             root=root,
             supervised=False,
@@ -82,6 +85,18 @@ class PatchedDataModuleNoMask(SSNDataModule):
             flips=False,
         )
 
+
+        self.train_data = SSNDataset(
+            transform=self.transform_train,
+            root=root,
+            split=Split.TRAIN,
+            supervised=False
+        )
+        self.train_data.samples = pd.DataFrame(columns=[
+            "path", "sample_id", "split", "image_path", "mask_path", "label_index"
+        ])
+
+        
         # Sadece test verisi tanımlanır
         self.test_data = PatchedDatasetNoMask(
             transform=self.transform_eval,
