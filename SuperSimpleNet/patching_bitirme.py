@@ -123,9 +123,9 @@ def process_all_images_multi_poly(image_dir, yolo_labels_dir, output_dir, total_
 
 def main():
     process_all_images_multi_poly(
-        image_dir="C:\\Users\\Emir\\Desktop\\AP Bitirme\\seat_stitches_new\\for_yolo\\yolo\\data\\images\\img7",
-        yolo_labels_dir="runs/local_test/yolo_seg2/labels",
-        output_dir="runs/local_test/yolo_seg2/patches",
+        image_dir="/content/drive/MyDrive/AP_Bitirme/bitirme/img7",
+        yolo_labels_dir="runs/local_test/yolo_seg/labels",
+        output_dir="runs/local_test/yolo_seg/patches",
         total_n_patches=10,
         patch_size=256
     )
