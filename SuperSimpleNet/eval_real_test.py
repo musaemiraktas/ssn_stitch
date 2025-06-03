@@ -2,7 +2,6 @@ import torch
 from tqdm import tqdm
 from pathlib import Path
 
-from visualize_realworld_results import visualize_realworld_results
 from model.supersimplenet import SuperSimpleNet
 from datamodules.patched_nomask_dataset import PatchedDataModuleNoMask
 
@@ -17,24 +16,23 @@ def eval_realworld(model, dataloader, device: str):
         "anomaly_map": [],
     }
 
-    for batch in tqdm(dataloader):
+    for batch in tqdm(dataloader, desc="Eval RealWorld"):
         image_batch = batch["image"].to(device)
-        anomaly_map, anomaly_score = model.forward(image_batch)
+        anomaly_map_batch, anomaly_score_batch = model.forward(image_batch)
 
-        results["anomaly_map"].append(anomaly_map.cpu())
-        results["score"].append(torch.sigmoid(anomaly_score).cpu())
+        # GPU -> CPU (tensörleri toplayalım)
+        results["anomaly_map"].append(anomaly_map_batch.cpu())
+        results["score"].append(torch.sigmoid(anomaly_score_batch).cpu())
         results["image_path"].extend(batch["image_path"])
 
-    results["anomaly_map"] = torch.cat(results["anomaly_map"])
-    results["score"] = torch.cat(results["score"])
-
-    for path, score in zip(results["image_path"], results["score"]):
-        print(f"{path} -> score: {score.item():.4f}")
+    # Katmanlı tensörleri tek tensöre çevir
+    results["anomaly_map"] = torch.cat(results["anomaly_map"], dim=0)  # shape: (N, 1, h0, w0)
+    results["score"] = torch.cat(results["score"], dim=0)            # shape: (N,)
 
     return results
 
-
-if __name__ == "__main__":
+def main():
+    # 1) Datamodule'u hazırlayın
     datamodule = PatchedDataModuleNoMask(
         root=Path("/content/ssn_stitch/SuperSimpleNet/datasets/patched_dataset"),
         image_size=(512, 512),
@@ -44,12 +42,17 @@ if __name__ == "__main__":
     )
     datamodule.setup()
 
-
+    # 2) Modeli yükleyin
     model_path = Path("/content/drive/MyDrive/AP_Bitirme/results300/superSimpleNet/checkpoints/patched_dataset/patched_dataset/weights.pt")
     model = SuperSimpleNet(image_size=datamodule.image_size, config={})
     model.load_model(model_path)
 
-
-    eval_realworld(model=model, dataloader=datamodule.test_dataloader(), device="cuda")
+    # 3) Eval'i yapın
     results = eval_realworld(model=model, dataloader=datamodule.test_dataloader(), device="cuda")
-    visualize_realworld_results(results, save_dir="./visuals")
+
+    # 4) Görselleştirme (threshold=0.3 veya kendi belirlediğiniz persentil vs.)
+    from visualize_realworld_results import visualize_realworld_results
+    visualize_realworld_results(results, save_dir=Path("./visuals"), threshold=0.3)
+
+if __name__ == "__main__":
+    main()
