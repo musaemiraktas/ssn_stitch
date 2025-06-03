@@ -1,26 +1,30 @@
-import cv2
-import torch
-import numpy as np
 import os
+import cv2
+import numpy as np
 from pathlib import Path
-from torchvision.transforms.functional import to_pil_image
+from torchvision.utils import save_image
+import torch
+from tqdm import tqdm
 
-def visualize_realworld_results(results: dict, save_dir: str = "./visuals"):
+def visualize_realworld_results(results, save_dir="./visuals"):
     os.makedirs(save_dir, exist_ok=True)
 
     for image_path, anomaly_map in zip(results["image_path"], results["anomaly_map"]):
-        orig_img = cv2.imread(str(image_path))
-        orig_img = cv2.resize(orig_img, (anomaly_map.shape[-1], anomaly_map.shape[-2]))
+        image = cv2.imread(image_path)
+        if image is None:
+            print(f"Hata: Görüntü okunamadı -> {image_path}")
+            continue
 
-        anomaly_map_np = anomaly_map.squeeze().numpy()
-        anomaly_map_np = (anomaly_map_np - anomaly_map_np.min()) / (anomaly_map_np.max() - anomaly_map_np.min() + 1e-8)
-        anomaly_map_np = np.uint8(255 * anomaly_map_np)
+        anomaly_map = anomaly_map.squeeze().numpy()
+        anomaly_map = (anomaly_map * 255).astype(np.uint8)
 
-        heatmap = cv2.applyColorMap(anomaly_map_np, cv2.COLORMAP_JET)
+        _, binary_mask = cv2.threshold(anomaly_map, 127, 255, cv2.THRESH_BINARY)
 
-        overlay = cv2.addWeighted(orig_img, 0.6, heatmap, 0.4, 0)
+        contours, _ = cv2.findContours(binary_mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
 
-        filename = Path(image_path).stem + "_overlay.png"
-        cv2.imwrite(str(Path(save_dir) / filename), overlay)
+        overlay = cv2.drawContours(image.copy(), contours, -1, (0, 0, 255), 2)
 
-    print(f"Görseller kaydedildi: {save_dir}")
+        save_name = Path(image_path).stem + "_overlay.jpg"
+        cv2.imwrite(str(Path(save_dir) / save_name), overlay)
+
+    print(f"{len(results['image_path'])} görüntü başarıyla kaydedildi -> {save_dir}")

@@ -2,7 +2,7 @@ import torch
 from tqdm import tqdm
 from pathlib import Path
 
-from SuperSimpleNet import visualize_realworld_results
+from visualize_realworld_results import visualize_realworld_results
 from model.supersimplenet import SuperSimpleNet
 from datamodules.patched_nomask_dataset import PatchedDataModuleNoMask
 
