@@ -2,6 +2,7 @@ import torch
 from tqdm import tqdm
 from pathlib import Path
 
+from SuperSimpleNet import visualize_realworld_results
 from model.supersimplenet import SuperSimpleNet
 from datamodules.patched_nomask_dataset import PatchedDataModuleNoMask
 
@@ -50,3 +51,5 @@ if __name__ == "__main__":
 
 
     eval_realworld(model=model, dataloader=datamodule.test_dataloader(), device="cuda")
+    results = eval_realworld(model=model, dataloader=datamodule.test_dataloader(), device="cuda")
+    visualize_realworld_results(results, save_dir="./visuals")
