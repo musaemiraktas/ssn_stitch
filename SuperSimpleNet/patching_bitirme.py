@@ -53,7 +53,6 @@ def extract_rotated_patches(image, polyline, n_patches, patch_size=64):
     for i, (cx, cy) in enumerate(centers):
         cx, cy = int(round(cx)), int(round(cy))
 
-        # Kenarlardan taşmayı engelle
         x1 = max(cx - half, 0)
         y1 = max(cy - half, 0)
         x2 = min(cx + half, w)
@@ -61,7 +60,6 @@ def extract_rotated_patches(image, polyline, n_patches, patch_size=64):
 
         patch = image[y1:y2, x1:x2]
 
-        # Eğer kenarlardan kesildiyse, patch'i orijinal boyuta getir
         if patch.shape[0] != patch_size or patch.shape[1] != patch_size:
             patch = cv2.copyMakeBorder(
                 patch,
@@ -97,16 +95,13 @@ def process_all_images_multi_poly(image_dir, yolo_labels_dir, output_dir, total_
             print(f"Uyarı: {img_name} içinde poligon yok.")
             continue
 
-        # Poligon uzunluklarını hesapla
         lengths = [calculate_polyline_length(poly) for poly in polygons]
         total_length = sum(lengths)
 
-        # Her poligona düşen patch sayısını belirle
         patch_counts = [
             max(1, round(total_n_patches * (length / total_length))) for length in lengths
         ]
 
-        # Gerekirse toplamı düzelt
         diff = sum(patch_counts) - total_n_patches
         if diff != 0:
             idx = np.argmax(patch_counts)

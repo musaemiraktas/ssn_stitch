@@ -3,14 +3,9 @@ import cv2
 import numpy as np
 from pathlib import Path
 
-def visualize_realworld_results(results: dict, save_dir: Path = Path("./visuals"), threshold: float = 0.3):
-    """
-    results: {
-      "image_path":   list[str],         # str olarak gelen dosya yolları
-      "score":        Tensor (N,),
-      "anomaly_map":  Tensor (N, 1, h0, w0)
-    }
-    """
+def visualize_realworld_results(results: dict,
+                                save_dir: Path = Path("./visuals"),
+                                threshold: float = 0.3):
     os.makedirs(save_dir, exist_ok=True)
 
     anomaly_maps = results["anomaly_map"].numpy()  # (N, 1, h0, w0)
@@ -18,38 +13,37 @@ def visualize_realworld_results(results: dict, save_dir: Path = Path("./visuals"
     scores = results["score"].numpy()              # (N,)
 
     for idx, img_path in enumerate(image_paths):
-        # >>> Burada img_path bir string, önce Path objesine çeviriyoruz
         p = Path(img_path)
 
-        anomaly_map_tensor = anomaly_maps[idx, 0, :, :]  # shape: (h0, w0)
+        anomaly_map_tensor = anomaly_maps[idx, 0, :, :]
         score = scores[idx]
 
-        # 1) Orijinal görüntüyü oku (BGR uint8)
-        image = cv2.imread(str(p))
-        if image is None:
+        orig = cv2.imread(str(p))
+        if orig is None:
             print(f"Image okunamadı: {p}")
             continue
+        H, W, _ = orig.shape
 
-        # 2) Normalize ve resize anomaly_map
-        anomaly_map = anomaly_map_tensor.copy()
-        anomaly_map = (anomaly_map - np.min(anomaly_map)) / (np.max(anomaly_map) - np.min(anomaly_map) + 1e-8)
-        h, w, _ = image.shape
-        anomaly_map_resized = cv2.resize(anomaly_map, (w, h), interpolation=cv2.INTER_LINEAR)
+        seg = anomaly_map_tensor.copy()  # float32
+        seg_norm = (seg - seg.min()) / (seg.max() - seg.min() + 1e-8)
 
-        # 3) Binary maske (threshold 0.3)
-        pred_mask = (anomaly_map_resized >= threshold).astype(np.uint8) * 255  # 0 veya 255
+        seg_resized = cv2.resize(seg_norm, (W, H), interpolation=cv2.INTER_LINEAR)  # float32, (H, W)
 
-        # 4) Konturları bul ve üzerine çiz
-        contours, _ = cv2.findContours(pred_mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
-        overlaid = image.copy()
-        cv2.drawContours(overlaid, contours, -1, (0, 0, 255), 2)  # kırmızı çizgi
+        mask_inverted = (seg_resized < threshold).astype(np.uint8) * 255  # uint8, (H, W)
 
-        # 5) Kaydetme klasörünü oluştur
-        out_folder = save_dir / p.parent.name
-        os.makedirs(out_folder, exist_ok=True)
+        mask_bgr = cv2.cvtColor(mask_inverted, cv2.COLOR_GRAY2BGR)  # shape: (H, W, 3), 0 veya 255 gerçekte
 
-        # 6) Dosya adı: <stem>_score_<0.xxxx>_overlay.jpg
-        filename = f"{p.stem}_score_{score:.4f}_overlay.jpg"
-        cv2.imwrite(str(out_folder / filename), overlaid)
+        contours, _ = cv2.findContours(mask_inverted, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+        overlaid = orig.copy()
+        cv2.drawContours(overlaid, contours, -1, (0, 0, 255), 2)  # (B, G, R) = kırmızı çizgi kalınlığı=2
 
-    print(f"Tüm patch görselleştirme dosyaları kaydedildi: {save_dir}")
+      
+        combined = np.hstack([mask_bgr, overlaid])  # shape: (H, 2W, 3)
+
+        combined_folder = save_dir / p.parent.name / "combined"
+        combined_folder.mkdir(parents=True, exist_ok=True)
+
+        combined_filename = f"{p.stem}_score_{score:.4f}_combined.png"
+        cv2.imwrite(str(combined_folder / combined_filename), combined)
+
+    print(f"Tüm “combined” görseller kaydedildi: {save_dir}")
