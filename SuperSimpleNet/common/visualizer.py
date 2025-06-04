@@ -34,15 +34,14 @@ class Visualizer:
                 gt_mask = np.zeros_like(anomaly_map)
             # images are normed to [0, 1] so we cut off at 0.5
             #pred_mask = anomaly_map >= 0.5
-            #pred_mask = anomaly_map >= 0.25
+            pred_mask = anomaly_map >= 0.3
 
-            percentile = 99.0
-            threshold = np.percentile(anomaly_map.numpy(), percentile)
-            print(f"{Path(image_path).name} → {percentile}th percentile threshold = {threshold:.4f}")
+            #percentile = 99.0
+            #threshold = np.percentile(anomaly_map.numpy(), percentile)
+            #print(f"{Path(image_path).name} → {percentile}th percentile threshold = {threshold:.4f}")
 
             #threshold = 0.80 * anomaly_map.max().item()
-
-            pred_mask = anomaly_map >= threshold
+            #pred_mask = anomaly_map >= threshold
 
             gt_label = "Anomalous" if label.item() else "Normal"
 
