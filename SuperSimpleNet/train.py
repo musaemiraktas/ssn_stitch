@@ -31,6 +31,7 @@ from datamodules.simpledataset import SimpleImageDataModule
 from datamodules.supervised_simpledataset import SupervisedStitchDataModule
 from datamodules.patched_dataset import main_patched_dataset
 from datamodules.stitch_supervised import StitchSupervised
+from datamodules.stitch_unsupervised import Stitch
 
 from model.supersimplenet import SuperSimpleNet
 
@@ -665,13 +666,49 @@ def main_our_dataset_defect_synthesis(device, config):
     results_writer.add_result(category=config["category"], last=results)
     results_writer.save(Path(config["results_save_path"]) / config["setup_name"] / config["dataset"])
 
+def main_stitch(device, config):
+    config = copy.deepcopy(config)
+    config["dataset"]  = "unsup_dataset"
+    config["category"] = "unsup_dataset"
+    config["name"]     = f"stitch_{config['setup_name']}"
+
+    seed_everything(config["seed"], workers=True)
+    torch.backends.cudnn.deterministic = True
+    torch.backends.cudnn.benchmark     = False
+
+    model = SuperSimpleNet(image_size=config["image_size"], config=config)
+
+    datamodule = Stitch(
+        root=Path(config["datasets_folder"]) / "unsup_dataset",
+        image_size=config["image_size"],
+        train_batch_size=config["batch"],
+        eval_batch_size=config["batch"],
+        num_workers=config["num_workers"],
+        seed=config["seed"],
+    )
+    datamodule.setup()
+
+    results = train_and_eval(
+        model=model,
+        datamodule=datamodule,
+        config=config,
+        device=device,
+    )
+
+    results_writer = ResultsWriter(metrics=[
+        "AP-det", "AP-loc", "P-AUROC", "I-AUROC", "AUPRO", "seg-AP-det", "seg-I-AUROC"
+    ])
+    results_writer.add_result(category=config["category"], last=results)
+    results_writer.save(Path(config["results_save_path"]) / config["setup_name"] / config["dataset"])
+
+
 
 def run_unsup(data_name):
     device = "cuda" if torch.cuda.is_available() else "cpu"
 
     config = {
         "wandb_project": "icpr",
-        "datasets_folder": Path("/content/drive/MyDrive/APBitirme/results"),
+        "datasets_folder": Path("/content/SuperSimpleNet/"),
         "num_workers": 4,
         "setup_name": "superSimpleNet",
         "backbone": "wide_resnet50_2",
@@ -684,10 +721,10 @@ def run_unsup(data_name):
         "overlap": True,  # makes no difference, just faster if false to avoid computation
         "noise_std": 0.015,
         "perlin_thr": 0.5,
-        "image_size": (512, 512),
+        "image_size": (768, 1024),
         "seed": 42,
         "batch": 16,
-        "epochs": 100,
+        "epochs": 300,
         "flips": False,  # makes no difference, just faster if false to avoid computation
         "seg_lr": 0.0002,
         "dec_lr": 0.0002,
@@ -696,7 +733,7 @@ def run_unsup(data_name):
         "stop_grad": True,
         "clip_grad": False,
         "eval_step_size": 4,
-        "results_save_path": Path("/content/drive/MyDrive/AP_Bitirme/results"),
+        "results_save_path": Path("/content/drive/MyDrive/AP_Bitirme/unsup_results"),
     }
     if data_name == "visa":
         config["perlin_thr"] = 0.6
@@ -718,6 +755,9 @@ def run_unsup(data_name):
     if data_name == "patched_dataset":
         config["perlin_thr"] = 0.5
         main_patched_dataset(device=device, config=config)
+    
+    if data_name == "stitch":
+        main_stitch(device, config)
 
 
 def run_sup(data_name):
