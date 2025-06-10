@@ -8,15 +8,15 @@ from datamodules.base.datamodule import SSNDataModule
 
 class StitchUnsupervisedDataset(SSNDataset):
     """
-    Unsupervised dataset for custom stitch/task dataset.
+    Unsupervised dataset for custom stitch dataset.
 
-    Expected folder structure:
+    Folder structure expected:
         root/
           train/
-            images/    # only defect-free (good) images
+            images/      # only defect-free (good) images
           test/
-            images/    # both defect-free and defective images
-            masks/     # binary .png mask per test image
+            images/      # both defect-free and defective images
+            masks/       # binary masks with same stem as images
     """
 
     def __init__(
@@ -38,19 +38,27 @@ class StitchUnsupervisedDataset(SSNDataset):
         self.root_split = Path(root) / split.value
 
     def make_dataset(self) -> tuple[pd.DataFrame, pd.DataFrame]:
+        # collect all image paths
         img_dir = self.root_split / "images"
-        image_paths = sorted([p for p in img_dir.glob("*") if p.is_file()])
-        df = pd.DataFrame({"image_path": [str(p) for p in image_paths]})
+        img_paths = sorted([p for p in img_dir.glob("*") if p.is_file()])
+        df = pd.DataFrame({"image_path": [str(p) for p in img_paths]})
 
-        if self.split == Split.TEST:
+        if self.split == Split.TRAIN:
+            # Unsupervised train: all are normal
+            df["mask_path"] = ""
+            normal_df = df.copy().reset_index(drop=True)
+            anomalous_df = pd.DataFrame(columns=df.columns)
+        else:
+            # Test split: assign masks
             mask_dir = self.root_split / "masks"
             mask_map = {p.stem: str(p) for p in mask_dir.glob("*") if p.is_file()}
             df["mask_path"] = df["image_path"].apply(
                 lambda x: mask_map.get(Path(x).stem, "")
             )
-        else:
-            df["mask_path"] = [""] * len(df)
-        return df, pd.DataFrame()
+            normal_df = df[df["mask_path"] == ""].reset_index(drop=True)
+            anomalous_df = df[df["mask_path"] != ""].reset_index(drop=True)
+
+        return normal_df, anomalous_df
 
 
 class Stitch(SSNDataModule):
