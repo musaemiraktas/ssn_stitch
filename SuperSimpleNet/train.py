@@ -721,9 +721,9 @@ def run_unsup(data_name):
         "overlap": True,  # makes no difference, just faster if false to avoid computation
         "noise_std": 0.015,
         "perlin_thr": 0.5,
-        "image_size": (768, 1024),
+        "image_size": (1024, 768),
         "seed": 42,
-        "batch": 16,
+        "batch": 8,
         "epochs": 300,
         "flips": False,  # makes no difference, just faster if false to avoid computation
         "seg_lr": 0.0002,

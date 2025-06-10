@@ -38,13 +38,13 @@ class StitchUnsupervisedDataset(SSNDataset):
         self.root_split = Path(root) / split.value
 
     def make_dataset(self) -> tuple[pd.DataFrame, pd.DataFrame]:
-        # collect all image paths
+        # Collect image paths
         img_dir = self.root_split / "images"
         img_paths = sorted([p for p in img_dir.glob("*") if p.is_file()])
         df = pd.DataFrame({"image_path": [str(p) for p in img_paths]})
 
         if self.split == Split.TRAIN:
-            # Unsupervised train: all are normal
+            # Unsupervised training: all normal samples
             df["mask_path"] = ""
             normal_df = df.copy().reset_index(drop=True)
             anomalous_df = pd.DataFrame(columns=df.columns)
@@ -57,6 +57,10 @@ class StitchUnsupervisedDataset(SSNDataset):
             )
             normal_df = df[df["mask_path"] == ""].reset_index(drop=True)
             anomalous_df = df[df["mask_path"] != ""].reset_index(drop=True)
+
+        # Assign label_index: normal=0, anomalous=1
+        normal_df["label_index"] = 0
+        anomalous_df["label_index"] = 1
 
         return normal_df, anomalous_df
 
