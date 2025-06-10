@@ -708,7 +708,7 @@ def run_unsup(data_name):
 
     config = {
         "wandb_project": "icpr",
-        "datasets_folder": Path("/content/SuperSimpleNet/"),
+        "datasets_folder": Path("/content/ssn_stitch/SuperSimpleNet/datasets/unsup_dataset"),
         "num_workers": 4,
         "setup_name": "superSimpleNet",
         "backbone": "wide_resnet50_2",
