@@ -713,7 +713,7 @@ def run_unsup(data_name):
         "setup_name": "superSimpleNet",
         "backbone": "wide_resnet50_2",
         "layers": ["layer2", "layer3"],
-        "patch_size": 3,
+        "patch_size": 10,
         "noise": True,
         "perlin": True,
         "no_anomaly": "empty",
@@ -733,7 +733,7 @@ def run_unsup(data_name):
         "stop_grad": True,
         "clip_grad": False,
         "eval_step_size": 4,
-        "results_save_path": Path("/content/drive/MyDrive/AP_Bitirme/unsup_results"),
+        "results_save_path": Path("/content/drive/MyDrive/AP_Bitirme/unsup_results3"),
     }
     if data_name == "visa":
         config["perlin_thr"] = 0.6
