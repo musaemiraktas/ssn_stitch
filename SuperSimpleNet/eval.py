@@ -288,7 +288,7 @@ def get_custom_dataset(config):  #patched için kullandım.
 def get_unsup_dataset(config):
     datamodule = Stitch(
         root=Path(config["datasets_folder"]) / "unsup_dataset",
-        image_size= (768, 1024),
+        image_size= (1024, 768),
         train_batch_size=config["batch"],
         eval_batch_size=config["batch"],
         num_workers=config["num_workers"],
@@ -485,6 +485,7 @@ if __name__ == "__main__":
 
     generate_result_json(
     run_ids=[""],
-    datasets=["patched_dataset"],
+    #datasets=["patched_dataset"],
+    datasets=["unsup_dataset"],
     res_path=Path("./eval_res"),
     )
