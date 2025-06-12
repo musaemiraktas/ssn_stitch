@@ -713,15 +713,15 @@ def run_unsup(data_name):
         "setup_name": "superSimpleNet",
         "backbone": "wide_resnet50_2",
         "layers": ["layer2", "layer3"],
-        "patch_size": 10,
+        "patch_size": 7,  #bizim için ideal.
         "noise": True,
         "perlin": True,
         "no_anomaly": "empty",
         "bad": True,
         "overlap": True,  # makes no difference, just faster if false to avoid computation
-        "noise_std": 0.015,
+        "noise_std": 0.025, #bizim için ideal.
         "perlin_thr": 0.5,
-        "image_size": (1024, 768),
+        "image_size": (1024, 768),  #patchsiz çalışırken görüntülerde kullandığım boyutlar.
         "seed": 42,
         "batch": 8,
         "epochs": 300,
@@ -738,20 +738,10 @@ def run_unsup(data_name):
     if data_name == "visa":
         config["perlin_thr"] = 0.6
         main_visa(device=device, config=config)
-    """if data_name == "mvtec":
+        """if data_name == "mvtec":
         config["perlin_thr"] = 0.2
         main_mvtec(device=device, config=config)"""
-    if data_name == "dataset_resized_1536x2048":
-        config["perlin_thr"] = 0.5
 
-        """    # 👇 BU SATIRLARI EKLE
-        print("\n📦 Eğitim Yapılandırması (config):\n")
-        for k, v in config.items():
-            print(f"{k}: {v}")
-        
-        return  # 👈 EĞİTİMİ BURADA DURDUR"""
-
-        main_our_dataset(device=device, config=config)
     if data_name == "patched_dataset":
         config["perlin_thr"] = 0.5
         main_patched_dataset(device=device, config=config)

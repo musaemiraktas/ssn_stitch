@@ -17,6 +17,7 @@ from datamodules.mvtec import MVTec
 from datamodules.visa import Visa
 from datamodules.ksdd2 import KSDD2
 from datamodules.sensum import Sensum
+from datamodules.stitch_unsupervised import Stitch
 from model.supersimplenet import SuperSimpleNet
 
 
@@ -272,7 +273,7 @@ def get_visa(config):
 
     return data
 
-def get_custom_dataset(config):
+def get_custom_dataset(config):  #patched için kullandım.
     datamodule = PatchedDataModule(
         root=Path(config["datasets_folder"]) / "patched_dataset",
         image_size=(512, 512),
@@ -283,6 +284,18 @@ def get_custom_dataset(config):
     )
     datamodule.setup()
     return [("patched_dataset", datamodule)]
+
+def get_unsup_dataset(config):
+    datamodule = Stitch(
+        root=Path(config["datasets_folder"]) / "unsup_dataset",
+        image_size=config["image_size"],
+        train_batch_size=config["batch"],
+        eval_batch_size=config["batch"],
+        num_workers=config["num_workers"],
+        seed=config["seed"],
+    )
+    datamodule.setup()
+    return [("unsup_dataset", datamodule)]
 
 
 def get_avg(df):
@@ -372,7 +385,7 @@ def run_eval(datasets, run_id):
         run_id: run_id of checkpoints to be used
     """
     config = {
-        "weights_path": Path("/content/drive/MyDrive/AP_Bitirme/results300/superSimpleNet/checkpoints"),
+        "weights_path": Path("/content/drive/MyDrive/AP_Bitirme/unsup_results8_p05_std0025/superSimpleNet/checkpoints"),
         #"weights_path": Path(r"./weights"),
         "datasets_folder": Path("/content/ssn_stitch/SuperSimpleNet/datasets"),
         "results_save_path": Path("./eval_res"),
@@ -389,6 +402,7 @@ def run_eval(datasets, run_id):
         "mvtec": get_mvtec,
         "visa": get_visa,
         "patched_dataset": get_custom_dataset,
+        "unsup_dataset": get_unsup_dataset,
     }
 
     for dataset in datasets:
@@ -465,7 +479,8 @@ if __name__ == "__main__":
     #run_eval(datasets=["mvtec", "visa", "ksdd2", "sensum"], run_id=0)
     run_eval(datasets=["patched_dataset"], run_id="")
     # to get mean and std of multiple runs, specify them with run_ids
-    
+    run_eval(datasets=["unsup_dataset"], run_id="")
+
     generate_result_json(
     run_ids=[""],
     datasets=["patched_dataset"],
