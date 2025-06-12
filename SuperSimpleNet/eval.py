@@ -288,7 +288,7 @@ def get_custom_dataset(config):  #patched için kullandım.
 def get_unsup_dataset(config):
     datamodule = Stitch(
         root=Path(config["datasets_folder"]) / "unsup_dataset",
-        image_size=config["image_size"],
+        image_size= (768, 1024),
         train_batch_size=config["batch"],
         eval_batch_size=config["batch"],
         num_workers=config["num_workers"],
@@ -477,7 +477,9 @@ def run_eval(datasets, run_id):
 
 if __name__ == "__main__":
     #run_eval(datasets=["mvtec", "visa", "ksdd2", "sensum"], run_id=0)
-    run_eval(datasets=["patched_dataset"], run_id="")
+    
+    #run_eval(datasets=["patched_dataset"], run_id="")
+    
     # to get mean and std of multiple runs, specify them with run_ids
     run_eval(datasets=["unsup_dataset"], run_id="")
 
